@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Controller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        body { margin: 0; background: #1a1a2e; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        input { padding: 15px; font-size: 20px; text-align: center; border-radius: 10px; border: none; margin-bottom: 10px; width: 80%; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 10px; border: none; background: #e94560; color: white; font-weight: bold; }
+        #ctrl-pad { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; }
+        #jump-btn { width: 250px; height: 250px; border-radius: 50%; background: #e94560; box-shadow: 0 10px #533440; border: none; color: white; font-size: 30px; }
+        #jump-btn:active { transform: translateY(5px); box-shadow: 0 5px #533440; }
+    </style>
+</head>
+<body>
+
+    <div id="connect-screen">
+        <h2>Enter Room Code</h2>
+        <input type="text" id="roomInput" placeholder="4-CHAR CODE">
+        <button onclick="connect()">LINK SYSTEM</button>
+    </div>
+
+    <div id="ctrl-pad">
+        <button id="jump-btn">JUMP</button>
+        <p>TAP TO ACTIVATE</p>
+    </div>
+
+    <script>
+        const peer = new Peer();
+        let conn;
+
+        function connect() {
+            const code = document.getElementById('roomInput').value.toUpperCase();
+            conn = peer.connect('GAME-' + code);
+
+            conn.on('open', () => {
+                document.getElementById('connect-screen').style.display = 'none';
+                document.getElementById('ctrl-pad').style.display = 'flex';
+                
+                const btn = document.getElementById('jump-btn');
+                const sendJump = (e) => { e.preventDefault(); conn.send('JUMP'); };
+                
+                btn.addEventListener('touchstart', sendJump);
+                btn.addEventListener('mousedown', sendJump);
+            });
+        }
+    </script>
+</body>
+</html>
